@@ -32,15 +32,34 @@ This project implements a real-time CDC pipeline that captures changes from a My
    - Receives CDC events from MySQL via **Debezium MySQL connector**.  
    - Separate **Kafka topics** are created for each MySQL table being monitored.  
 
+
 3. **Debezium MySQL Source Connector**  
-   - Runs on **Kafka Connect** (EC2).  
+   - Runs on Kafka Connect (EC2).  
    - Captures changes from MySQL tables and publishes them to respective Kafka topics.  
-**Configuration file in repository:** [`mysql_connector.json`](./mysql_connector.json)
+   - **Configuration file:** [`mysql_connector.json`](./mysql_connector.json)  
+   - **Register the connector with Kafka Connect:**  
+     ```bash
+     curl -X POST -H "Content-Type: application/json" \
+     --data @mysql_connector.json \
+     http://<KAFKA_CONNECT_HOST>:8083/connectors
+     ```
+
+   
+
+
+
 4. **Kafka S3 Sink Connector**  
-   - Streams CDC events from Kafka topics into **Amazon S3**.  
-   - Supports **JSON, Parquet, or CSV** formats based on configuration.  
-   - Ensures a **durable, queryable data lake** for downstream analytics.  
-   - **Configuration file in repository:** [`sink_connector_cdc.json`](./sink_connector_cdc.json)
+   - Streams CDC events from Kafka topics into Amazon S3.  
+   - Supports JSON, Parquet, or CSV formats based on configuration.  
+   - Ensures a durable, queryable data lake for downstream analytics.  
+   - **Configuration file :** [`sink_connector_cdc.json`](./sink_connector_cdc.json)  
+   - **Register the connector with Kafka Connect:**  
+     ```bash
+     curl -X POST -H "Content-Type: application/json" \
+     --data @sink_connector_cdc.json \
+     http://<KAFKA_CONNECT_HOST>:8083/connectors
+     ```
+
 
 5. **Amazon S3 (Data Lake)**  
    - Stores CDC events from Kafka in your chosen format.  
